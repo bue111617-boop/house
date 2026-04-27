@@ -119,7 +119,7 @@ async function loadCases() {
 }
 
 function renderStats() {
-  const all = await api ? allCases : [];
+  const all = allCases;
   const active = allCases.filter(c => getStatus(c.deadline) === 'active').length;
   const soon = allCases.filter(c => getStatus(c.deadline) === 'soon').length;
   const expired = allCases.filter(c => getStatus(c.deadline) === 'expired').length;
