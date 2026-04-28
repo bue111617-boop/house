@@ -39,6 +39,7 @@ async function initDb() {
       company TEXT NOT NULL,
       website TEXT DEFAULT '',
       price REAL DEFAULT 0,
+      reserve_price REAL DEFAULT 0,
       dev_name TEXT DEFAULT '',
       dev_phone TEXT DEFAULT '',
       match_time TEXT DEFAULT '',
@@ -57,6 +58,7 @@ async function initDb() {
     const names = cols.values.map(r => r[1]);
     if (!names.includes('case_name')) db.run("ALTER TABLE cases ADD COLUMN case_name TEXT DEFAULT ''");
     if (!names.includes('screenshot')) db.run("ALTER TABLE cases ADD COLUMN screenshot TEXT DEFAULT ''");
+    if (!names.includes('reserve_price')) db.run("ALTER TABLE cases ADD COLUMN reserve_price REAL DEFAULT 0");
   }
 
   const existingAdmin = db.exec("SELECT id FROM users WHERE username = 'admin'");

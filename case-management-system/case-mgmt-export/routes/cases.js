@@ -50,11 +50,11 @@ router.get('/:id', requireLogin, (req,res) => {
 });
 
 router.post('/', requireEditor, (req,res) => {
-  const { case_name, address, company, website, price, dev_name, dev_phone, match_time, deadline, note, screenshot } = req.body;
+  const { case_name, address, company, website, price, reserve_price, dev_name, dev_phone, match_time, deadline, note, screenshot } = req.body;
   if (!address||!company) return res.status(400).json({error:'地址和委託公司為必填'});
   const id = insertSql(
-    'INSERT INTO cases (case_name,address,company,website,price,dev_name,dev_phone,match_time,deadline,note,screenshot,operator) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-    [case_name||'',address,company,website||'',price||0,dev_name||'',dev_phone||'',match_time||'',deadline||'',note||'',screenshot||'',req.session.user.username]
+    'INSERT INTO cases (case_name,address,company,website,price,reserve_price,dev_name,dev_phone,match_time,deadline,note,screenshot,operator) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    [case_name||'',address,company,website||'',price||0,reserve_price||0,dev_name||'',dev_phone||'',match_time||'',deadline||'',note||'',screenshot||'',req.session.user.username]
   );
   const newCase = getOneSql('SELECT * FROM cases WHERE id=?', [id]);
   const user = getOneSql('SELECT name FROM users WHERE username=?', [newCase.operator]);
@@ -65,12 +65,12 @@ router.post('/', requireEditor, (req,res) => {
 router.put('/:id', requireEditor, (req,res) => {
   const existing = getOneSql('SELECT * FROM cases WHERE id=?', [req.params.id]);
   if (!existing) return res.status(404).json({error:'案件不存在'});
-  const { case_name, address, company, website, price, dev_name, dev_phone, match_time, deadline, note, screenshot } = req.body;
+  const { case_name, address, company, website, price, reserve_price, dev_name, dev_phone, match_time, deadline, note, screenshot } = req.body;
   if (!address||!company) return res.status(400).json({error:'地址和委託公司為必填'});
   const ss = screenshot !== undefined ? screenshot : existing.screenshot;
   runSql(
-    "UPDATE cases SET case_name=?,address=?,company=?,website=?,price=?,dev_name=?,dev_phone=?,match_time=?,deadline=?,note=?,screenshot=?,operator=?,updated_at=datetime('now','localtime') WHERE id=?",
-    [case_name||'',address,company,website||'',price||0,dev_name||'',dev_phone||'',match_time||'',deadline||'',note||'',ss,req.session.user.username,req.params.id]
+    "UPDATE cases SET case_name=?,address=?,company=?,website=?,price=?,reserve_price=?,dev_name=?,dev_phone=?,match_time=?,deadline=?,note=?,screenshot=?,operator=?,updated_at=datetime('now','localtime') WHERE id=?",
+    [case_name||'',address,company,website||'',price||0,reserve_price||0,dev_name||'',dev_phone||'',match_time||'',deadline||'',note||'',ss,req.session.user.username,req.params.id]
   );
   const updated = getOneSql('SELECT * FROM cases WHERE id=?', [req.params.id]);
   const user = getOneSql('SELECT name FROM users WHERE username=?', [updated.operator]);

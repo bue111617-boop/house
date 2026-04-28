@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="/css/style.css">
 <style>
 .brand-logo { display:flex; align-items:center; gap:10px; }
-.brand-logo-icon { width:42px; height:42px; background:#c8102e; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:700; flex-shrink:0; line-height:1.2; text-align:center; }
 .nav-brand-sub { font-size:13px; color:var(--text2); margin-top:1px; }
 .screenshot-area { border:1.5px dashed var(--border2); border-radius:var(--radius); padding:10px; text-align:center; cursor:pointer; transition:border-color .2s; position:relative; min-height:90px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; }
 .screenshot-area:hover { border-color:var(--blue); }
@@ -27,11 +26,8 @@
 <div id="loginPage" class="login-page">
   <div class="login-card">
     <div class="login-brand">
-      <div class="brand-logo-icon">有巢氏<br>房屋</div>
-      <div>
-        <div class="brand-name">有巢氏房屋</div>
-        <div class="brand-sub">案件管理系統</div>
-      </div>
+      <img src="/logo01.jpg" alt="有巢氏房屋" style="height:54px;object-fit:contain;">
+      <div class="brand-sub" style="font-size:14px;color:var(--text3);margin-top:4px;">案件管理系統</div>
     </div>
     <div class="login-form">
       <div class="form-group"><label>帳號</label><input type="text" id="loginUsername" placeholder="輸入帳號" autocomplete="username"></div>
@@ -47,11 +43,8 @@
   <nav class="navbar">
     <div class="nav-brand">
       <div class="brand-logo">
-        <div class="brand-logo-icon" style="width:32px;height:32px;font-size:11px;">有巢氏<br>房屋</div>
-        <div>
-          <div style="font-size:16px;font-weight:500;color:var(--text)">有巢氏房屋</div>
-          <div class="nav-brand-sub">案件管理系統</div>
-        </div>
+        <img src="/logo01.jpg" alt="有巢氏房屋" style="height:36px;object-fit:contain;">
+        <div class="nav-brand-sub">案件管理系統</div>
       </div>
     </div>
     <div class="nav-tabs">
@@ -98,17 +91,18 @@
       <table class="data-table" id="casesTable">
         <thead><tr>
           <th style="width:7%">截圖</th>
-          <th style="width:10%">案名</th>
-          <th style="width:14%">地址</th>
-          <th style="width:9%">委託公司</th>
-          <th style="width:8%">委託價格</th>
-          <th style="width:8%">開發姓名</th>
-          <th style="width:9%">開發電話</th>
-          <th style="width:8%">配案日期</th>
-          <th style="width:7%">截止日</th>
-          <th style="width:7%">操作人</th>
+          <th style="width:9%">案名</th>
+          <th style="width:13%">地址</th>
+          <th style="width:8%">委託公司</th>
+          <th style="width:7%">委託價格</th>
+          <th style="width:7%">底價</th>
+          <th style="width:7%">開發姓名</th>
+          <th style="width:8%">開發電話</th>
+          <th style="width:7%">配案日期</th>
+          <th style="width:6%">截止日</th>
+          <th style="width:6%">操作人</th>
           <th style="width:6%">狀態</th>
-          <th style="width:7%">操作</th>
+          <th style="width:9%">操作</th>
         </tr></thead>
         <tbody id="casesBody"></tbody>
       </table>
@@ -145,6 +139,7 @@
         <div class="form-group"><label>委託公司 *</label><input type="text" id="fCompany" placeholder="公司名稱"></div>
         <div class="form-group col-2"><label>地址 *</label><input type="text" id="fAddress" placeholder="完整地址"></div>
         <div class="form-group"><label>委託價格（萬元）</label><input type="number" id="fPrice" placeholder="0" min="0" step="0.1"></div>
+        <div class="form-group"><label>底價（萬元）</label><input type="number" id="fReservePrice" placeholder="0" min="0" step="0.1"></div>
         <div class="form-group"><label>案件網址</label><input type="url" id="fWebsite" placeholder="https://"></div>
       </div>
       <div class="section-title">開發聯絡人</div>
@@ -393,7 +388,7 @@ function renderCases() {
   const canEdit = currentUser.role !== 'viewer';
   const tbody = $('casesBody');
   if (!slice.length) {
-    tbody.innerHTML = '<tr><td colspan="12" class="empty-row">找不到符合條件的案件</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="13" class="empty-row">找不到符合條件的案件</td></tr>';
   } else {
     tbody.innerHTML = slice.map(c => {
       const s = getStatus(c.deadline);
@@ -406,6 +401,7 @@ function renderCases() {
         '<td title="' + c.address + '">' + c.address + '</td>' +
         '<td>' + c.company + '</td>' +
         '<td>' + fmtWan(c.price) + '</td>' +
+        '<td>' + fmtWan(c.reserve_price) + '</td>' +
         '<td>' + (c.dev_name||'—') + '</td>' +
         '<td>' + (c.dev_phone||'—') + '</td>' +
         '<td>' + fmtDate(c.match_time) + '</td>' +
@@ -438,6 +434,7 @@ function openCaseForm(id) {
     $('fCompany').value = c.company || '';
     $('fWebsite').value = c.website || '';
     $('fPrice').value = c.price || '';
+    $('fReservePrice').value = c.reserve_price || '';
     $('fDevName').value = c.dev_name || '';
     $('fDevPhone').value = c.dev_phone || '';
     $('fMatchTime').value = c.match_time ? c.match_time.slice(0,10) : '';
@@ -452,7 +449,7 @@ function openCaseForm(id) {
       $('ssClearBtn').style.display = '';
     }
   } else {
-    ['fCaseName','fAddress','fCompany','fWebsite','fPrice','fDevName','fDevPhone','fMatchTime','fDeadline','fNote'].forEach(f => $(f).value = '');
+    ['fCaseName','fAddress','fCompany','fWebsite','fPrice','fReservePrice','fDevName','fDevPhone','fMatchTime','fDeadline','fNote'].forEach(f => $(f).value = '');
   }
   $('caseModal').classList.remove('hidden');
 }
@@ -468,6 +465,7 @@ async function saveCase() {
     case_name: caseName, address, company,
     website: $('fWebsite').value.trim(),
     price: parseFloat($('fPrice').value) || 0,
+    reserve_price: parseFloat($('fReservePrice').value) || 0,
     dev_name: $('fDevName').value.trim(),
     dev_phone: $('fDevPhone').value.trim(),
     match_time: $('fMatchTime').value,
@@ -502,6 +500,7 @@ async function openDetail(id) {
         '<div class="detail-row"><span class="detail-label">案名</span><span class="detail-value">' + (c.case_name||'—') + '</span></div>' +
         '<div class="detail-row"><span class="detail-label">委託公司</span><span class="detail-value">' + (c.company||'—') + '</span></div>' +
         '<div class="detail-row"><span class="detail-label">委託價格</span><span class="detail-value">' + fmtWan(c.price) + '</span></div>' +
+        '<div class="detail-row"><span class="detail-label">底價</span><span class="detail-value">' + fmtWan(c.reserve_price) + '</span></div>' +
         '<div class="detail-row"><span class="detail-label">案件網址</span><span class="detail-value">' + (c.website ? '<a href="' + c.website + '" target="_blank">' + c.website + '</a>' : '—') + '</span></div>' +
         '<div class="detail-row"><span class="detail-label">操作人</span><span class="detail-value">' + (c.operator_name||c.operator||'—') + '</span></div>' +
       '</div>' +
